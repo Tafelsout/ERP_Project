@@ -2,37 +2,45 @@
 // CNC Shield Stepper  Control Demo
 // Superb Tech
 // www.youtube.com/superbtech
-
+const byte enablePin = 8;
 const int StepX = 2;
 const int DirX = 5;
 
 const int StepY = 3;
 const int DirY = 6;
 
-const int StepZ = 4;
-const int DirZ = 7;
+const int StepZ = 12;
+const int DirZ = 13;
 
 const int LimitX = 9;
 const int LimitY = 10;
 
 int x_pos = 0;
 int y_pos = 0;
+int z_pos = 0;
 
-const int x_soft_limit = 1800;
-const int y_soft_limit = 1500;
+
+int stepping_mode = 1/(0.5); //Change the value in the brackets to change the stepping mode
+
+const int x_soft_limit = 1800 * stepping_mode;
+const int y_soft_limit = 1500 * stepping_mode;
 
 int home_is_busy = 0;
 
-const int norm_speed = 2000; //Delay in microseconds between steps
-const int home_speed = 15000;
-const int numSteps_WASD = 50; //Manual homing precision
+const int norm_speed = 800; //Delay in microseconds between steps
+const int home_speed = 10000;
+const int numSteps_WASD = 200; //Manual homing precision
 
 void setup() {
+  pinMode(enablePin, OUTPUT);
+  digitalWrite(enablePin, LOW);  // enable steppers
   //Set the pins connected to the stepper motor drivers
   pinMode(StepX,OUTPUT);
   pinMode(DirX,OUTPUT);
+  
   pinMode(StepY,OUTPUT);
   pinMode(DirY,OUTPUT);
+
   pinMode(StepZ,OUTPUT);
   pinMode(DirZ,OUTPUT);
   // Set the limit switch pins as inputs
@@ -123,6 +131,16 @@ void loop() {
       moveStepper(StepY, DirY, numSteps_WASD, LOW, norm_speed, y_pos);
     }
 
+    if (command == 'o') {
+      Serial.println("O has been pressed.");
+      moveStepper(StepZ, DirZ, 300, HIGH, 500, z_pos);
+    }
+
+    if (command == 'l') {
+      Serial.println("L has been pressed.");
+      moveStepper(StepZ, DirZ, 300, LOW, 500, z_pos);
+    }
+
     if (command == 'h'){
       home_is_busy = 1;
       //Home the X-Axes
@@ -183,21 +201,21 @@ void moveStepper(int stepPin, int dirPin, int steps, int direction, int speed, i
 
   // Move the stepper motor the specified number of steps
   for (int i = 0; i < steps; i++) {
-    if (stepPin == StepX){
-        if (direction == HIGH && position >= x_soft_limit ) {
-          return;
-        }
-    } else {
-        if (direction == HIGH && position >= y_soft_limit ) {
-          return;
-        } 
-    }
+    // if (stepPin == StepX){
+    //     if (direction == HIGH && position >= x_soft_limit ) {
+    //       return;
+    //     }
+    // } else {
+    //     if (direction == HIGH && position >= y_soft_limit ) {
+    //       return;
+    //     } 
+    // }
     
-    if (direction == LOW && position <= 0 ) {
-      if (home_is_busy == 0){
-        return;
-      }      
-    }
+    // if (direction == LOW && position <= 0 ) {
+    //   if (home_is_busy == 0){
+    //     return;
+    //   }      
+    // }
 
     digitalWrite(stepPin, HIGH);
     delayMicroseconds(speed);
