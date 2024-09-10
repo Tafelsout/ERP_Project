@@ -29,7 +29,7 @@ int home_is_busy = 0;
 
 const int norm_speed = 800; //Delay in microseconds between steps
 const int home_speed = 10000;
-const int numSteps_WASD = 200; //Manual homing precision
+const int numSteps_WASD = 100; //Manual homing precision
 
 void setup() {
   pinMode(enablePin, OUTPUT);
@@ -133,12 +133,12 @@ void loop() {
 
     if (command == 'o') {
       Serial.println("O has been pressed.");
-      moveStepper(StepZ, DirZ, 300, HIGH, 500, z_pos);
+      moveStepper(StepZ, DirZ, 50, HIGH, 500, z_pos);
     }
 
     if (command == 'l') {
       Serial.println("L has been pressed.");
-      moveStepper(StepZ, DirZ, 300, LOW, 500, z_pos);
+      moveStepper(StepZ, DirZ, 50, LOW, 500, z_pos);
     }
 
     if (command == 'h'){
